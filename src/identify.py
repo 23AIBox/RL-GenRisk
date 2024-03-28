@@ -212,7 +212,7 @@ def run(gene_final,score_alpha):
 
 if __name__ == "__main__":
     import sys
-    cancer = sys.argv[1]
+    cancer = 'KIRC'
     seed = 1
     weightnumber = 50
     seed_torch(seed)
