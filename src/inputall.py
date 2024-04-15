@@ -4,7 +4,7 @@ import random
 
 # 转化数据 以患者为样本，划分训练集，测试集
 def getInput(cancer):
-    filename = "nCOP-master/Inputs/"+cancer+".txt"
+    filename = "Inputs/"+cancer+".txt"
     patients = {}
     with open(filename, 'r') as file_to_read:
         for line in file_to_read.readlines():
