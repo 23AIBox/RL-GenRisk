@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import random
 
-# 转化数据 以患者为样本，划分训练集，测试集
 def getInput(cancer):
     filename = "Inputs/"+cancer+".txt"
     patients = {}
@@ -28,12 +27,11 @@ def getInput(cancer):
         else:
             patient = patients_name[i]
             test_data[patient] = patients[patient]
-    print('总患者样本数', len(patients.keys()))
-    print('训练集患者样本数', len(train_data.keys()))
-    print('测试集患者样本数', len(test_data.keys()))
+    print('Total number of patients: ', len(patients.keys()))
+    print('Total number of patients for train: ', len(train_data.keys()))
+    print('Total number of patients for test: ', len(test_data.keys()))
     return patients, test_data,patients
 
-# 导入权重矩阵
 def getWeight(gene_name):
     filename = 'nCOP-master/Inputs/weights.txt'
     weights = {}
@@ -45,13 +43,9 @@ def getWeight(gene_name):
                 weight=gene_temp[1]
                 weights[gene] = float(weight)
     weights_value = list(weights.values())
-    # for gene in list(weights.keys()):
-    #     weight = weights[gene]
-    #     # print(type(weight),type(max_weight))
-    #     weights[gene] = weight/sum(weights_value)
+    
     return weights
 
-# 生成基因及其覆盖的样本字典 基因：覆盖样本
 def getGene(patients):
     gene_dic = {}
     for patient in list(patients.keys()):
@@ -63,7 +57,6 @@ def getGene(patients):
                 gene_dic[gene].append(patient)
     return gene_dic
 
-# 生成随机样本的基因及其覆盖的样本字典 基因：覆盖样本
 def random_getGene(patients,gene_name):
     gene_dic = {}
     for patient in list(patients.keys()):
@@ -78,7 +71,6 @@ def random_getGene(patients,gene_name):
 
 
 
-# 随机抽选85%的患者样本
 def random_patient(patients):
     ran_patient = {}
     num = int(len(patients)*0.85)
@@ -87,8 +79,6 @@ def random_patient(patients):
         ran_patient[i]=patients[i]
     return ran_patient
 
-# 导入网络
-# set1 基因名称
 def getNetwork(gene):
     set1 = []
     net = {}
