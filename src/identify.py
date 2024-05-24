@@ -10,8 +10,6 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '4,5'
 
 import torch
 torch.set_num_threads(4)
-# 读取标准文件数据库
-# gene_sta_all = []
 gene_sta = []
 
 # gene_sta_test = []
@@ -44,23 +42,6 @@ sample_index=random.sample(range(0, test_sta_number), int(test_sta_number*0.7))
 
 
 
-
-
-# f.close()
-# f = open("test_sta.txt", "w")
-# random_index = np.random.choice(len(gene_sta_all), size=20)
-# for i in range(len(gene_sta_all)):
-#     if i in random_index:
-#         gene_sta.append(gene_sta_all[i])
-#     else:
-#         gene_sta_test.append(gene_sta_all[i])
-#         print(gene_sta_all[i], file = f)
-# f.close()
-
-
-
-
-# 特征归一化
 def Normalized(feature):
     X_scaler = preprocessing.StandardScaler()
     X_train = X_scaler.fit_transform(feature)
@@ -71,8 +52,6 @@ def Normalized_minmax(feature):
     for i in range(len(feature[0])):
         X_train[:,[i]] = X_scaler.fit_transform(feature[:,[i]])
     return X_train
-# 初始化节点特征
-# 初始化feature为3维，[节点度,1,1]
 def get_feature(net,weights,gene_name,gene_final):
     nodes_size = net.shape[0]
     feature = np.zeros((nodes_size, 3))
@@ -103,7 +82,6 @@ def get_feature1(net,actions,weights,gene_name,gene_final):
     return feature
 
 
-# 计算拉普拉斯公式,用于计算图嵌入loss
 def laplacian(net):
     lap = copy.deepcopy(net)
     lap = lap * (-1)
@@ -118,24 +96,11 @@ def evaluate(gene2):
         for i in reader:
             gene_sta.append(i[0])
 
-    # # 读取对比方法数据库
-    # filename = 'nCOP-master/Outputs/nCOP_out_results.txt'
-    # gene1 = []
-    # with open(filename, 'r') as file_to_read:
-    #     for line in file_to_read.readlines():
-    #         gene_temp = line.split()
-    #         gene1.append(gene_temp[0])
-    # 计算对比方法准确率
     gene1_num = []
     num = 0
     for i in list(gene2.keys()):
         if i in gene_sta:
             num = num + 1
-        # gene1_num.append(num / (i + 1))
-    # 读取模型输出
-    # gene2 = sorted(gene2.items(),key=lambda x:x[1], reverse=True)
-
-    # 计算对比方法准确率
     num1 = 0
     num2 =0
     for i in list(gene2.keys()):
@@ -147,7 +112,6 @@ def evaluate(gene2):
     return num,num1,num2
 
 
-# 一个episode-直到终端状态，在图上找到影响者的整个过程
 def run(gene_final,score_alpha):
 
     step = 0
@@ -155,7 +119,6 @@ def run(gene_final,score_alpha):
     train_num = 0
     episode_num = 1
     gene_sort = {}
-    # 记录每个初始节点的score值
     score_PBRM1 = []
     score_MUC4 = []
     score_VHL = []
@@ -183,8 +146,6 @@ def run(gene_final,score_alpha):
     pat_num = len(set(patient))
     RL.pat_num = pat_num
     print(pat_num)
-    # 训练多少episode
-
 
     state_steps=[]
     reward_steps=[]
@@ -233,14 +194,12 @@ if __name__ == "__main__":
     file_to_read.close()
     train_patient_data, test_patient_data,patients = getInput(cancer)
     gene_data = getGene(patients)
-    # 输出邻接矩阵、基因覆盖的样本，邻接矩阵的基因名字顺序
     network, gene_final, gene_name = getNetworkall(gene_data)
     weights = getWeight(gene_name)
 
     feature = get_feature(network,weights,gene_name,gene_final)
 
     len_gene = len(gene_name)
-    # print(np.sum(network[1655]))
     score_alpha=0.5
     RL = DeepQNetwork(len_gene, network[:, :], feature[:,:],64,
                       train_patient_data=train_patient_data,
