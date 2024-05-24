@@ -1,14 +1,3 @@
-"""
-Created : 2019/10/04
-Author  : Philip Gao
-
-Beijing Normal University
-"""
-
-# This script aims to implement the structure2vec framework used in S2V-DQN.
-# Refer to Learning Combinatorial Optimization Algorithms over Graph for more 
-# details.
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -37,7 +26,6 @@ class Q_Fun(nn.Module):
         self.hid_dim = hid_dim
         self.conv1 = GCNConv(hid_dim, hid_dim)
         self.conv2 = GCNConv(hid_dim, hid_dim)
-        #self.conv3 = GCNConv(hid_dim, hid_dim)
         self.T    = T
         Linear = partial(nn.Linear, bias=True)
         self.lin1 = Linear(3, hid_dim)
@@ -56,10 +44,7 @@ class Q_Fun(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=ALPHA)
 
     def forward(self, mu, x,action_sel, batch_flag=False,test_flag=False):
-        # mu has shape [batch_size*N, in_dim]
-        # x has shape [batch_size*N, 1]
-        # edge_index has shape [Es, 2]
-        # edge_w has shape [Es, 1]
+
         if mu is None:
             x_in=x.clone()
             x_1=self.lin1(x)
@@ -69,7 +54,6 @@ class Q_Fun(nn.Module):
             self.dropout = nn.Dropout(p=0.5,inplace=False)
             x_3 = self.conv2(x_2, self.net_old)
             x_3 = x_3.relu()
-            #x = self.lin4(x)
             nodes_vec = self.lin2(torch.cat([x_1,x_2,x_3], dim=-1))
         else:
             nodes_vec=mu
@@ -78,33 +62,20 @@ class Q_Fun(nn.Module):
         num_nodes = self.n_actions
 
 
-        # graph_pool = torch.sum(mu, dim=-2, keepdim=True)
 
         if not batch_flag:
-            # graph_pool = scatter_add(mu, action_sel, dim=-2)[1]
-            # graph_pool = graph_pool.repeat(num_nodes,1)
             graph_pool2 = scatter_add(nodes_vec, action_sel, dim=-2)[0]
             number = len(action_sel) - torch.sum(action_sel)
             if test_flag:
                 number=1
-            # print(graph_pool2)
             graph_pool2 = (graph_pool2 ).repeat(num_nodes, 1)
             
         else:
-            # graph_pool = scatter_add(mu, action_sel, dim=-2)[:,[1]]
-            # graph_pool = graph_pool.repeat(1,num_nodes, 1)
             graph_pool2 = scatter_add(nodes_vec, action_sel, dim=-2)[:, [0]]
             number = num_nodes - torch.sum(action_sel, 1, keepdim=True).unsqueeze(1)
-            # print(number)
-            # temp=graph_pool2/number
-            # print(temp.shape,graph_pool2.shape,number.shape)
             if test_flag:
                 number=1
             graph_pool2 = (graph_pool2 ).repeat(1, num_nodes, 1)
-        # print ("*****************************************")
-        # print(graph_pool)
-        # print (nodes_vec)
-        # print ("*****************************************")
         Cat = torch.cat((self.lin6(graph_pool2), nodes_vec), dim=-1)
         return self.lin8(F.relu(self.lin5(F.relu(Cat)))).squeeze(),nodes_vec
 
