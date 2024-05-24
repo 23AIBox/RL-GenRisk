@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 import copy
-# np.random.seed(1)
-# tf.set_random_seed(1)
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import torch
@@ -58,7 +56,6 @@ class DeepQNetwork:
         self.score_be = 0
         self.score_sta = 0
         self.score_pat = 0
-        # total learning step
         self.learn_step_counter = 0
         self.a_ori = np.zeros((1, self.embedding_size))
 
