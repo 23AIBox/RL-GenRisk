@@ -9,7 +9,6 @@ from replay_buffer import ReplayBuffer
 from qfunction import Q_Fun
 mpl.use('Agg')
 
-# Deep Q Network off-policy
 class DeepQNetwork:
     def __init__(
             self,
@@ -116,8 +115,6 @@ class DeepQNetwork:
             q_next[i,:] = self.get_train_Q(action_list,network,feature,s_)
             batch_s_[i,:] = self.memory_s_[index+self.n_step, :]
         return batch_fea,batch_net,betch_lap,batch_s,batch_a,batch_r,q_next,batch_s_
-            
-
 
     def store_transition(self, s, a, r, s_, network_new1, feature_new1, lap):
 
@@ -138,9 +135,7 @@ class DeepQNetwork:
         else:
             self.memory_temp[index] = 1
         self.memory_counter += 1
-
-
-
+        
     def getState(self, feature_new, network_new):
         embedding = self.sess.run(self.emb_node,
                                   feed_dict={self.feature_ori: feature_new,
@@ -183,7 +178,6 @@ class DeepQNetwork:
         actions_value = np.squeeze(actions_value)
         qt = np.max(actions_value)
         return qt
-
 
     def choose_action(self, state,action_sel,action_index):
         
@@ -288,10 +282,7 @@ class DeepQNetwork:
         feature = self.Normalized_minmax(feature)
         return feature
 
-    def step(self,network, action, gene_num, gene_name,weights):
-
-
- 
+    def step(self,network, action, gene_num, gene_name,weights): 
         actions = self.actions[:]
         node_prop = len(actions)
         weight_sum,patient_num,gene_sta_num = self.get_reward(gene_num, gene_name)
@@ -314,12 +305,12 @@ class DeepQNetwork:
         if len(actions) == 999:
             self.embedding=None
             done = 1
-            print(self.actions)
+            # print(self.actions)
             train_acc = self.getAcc(actions, self.train_patient_data, gene_name)
             self.train_cover.append(train_acc)
             test_acc = self.getAcc(actions, self.test_patient_data, gene_name)
             self.test_cover.append(test_acc)
-            print('train_acc', train_acc, 'test_acc', test_acc)
+            # print('train_acc', train_acc, 'test_acc', test_acc)
             self.actions = []
             self.reward_list.append(reward)
             self.reward_all = 0
@@ -358,7 +349,7 @@ class DeepQNetwork:
         loss.backward()
         self.Q.optimizer.step()
 
-        print('loss为', loss.item())
+        # print('loss为', loss.item())
         self.cost_his.append(loss.item())
         
         self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon > self.epsilon_max else self.epsilon_max
@@ -387,7 +378,7 @@ class DeepQNetwork:
 
         plt.ylabel('Cost')
         plt.xlabel('training steps')
-        plt.savefig(str(i) + "loss.png")
+        # plt.savefig(str(i) + "loss.png")
         plt.clf()
 
     def plot_reward(self, i,score_PBRM1,score_MUC4,score_VHL):
@@ -397,7 +388,7 @@ class DeepQNetwork:
         plt.ylabel('score')
         plt.xlabel('step')
 
-        plt.savefig(str(i) + "score.png")
+        # plt.savefig(str(i) + "score.png")
         plt.clf()
 
     def plot_cost_finnal(self, i):
@@ -411,5 +402,5 @@ class DeepQNetwork:
 
         plt.ylabel('Cost')
         plt.xlabel('training steps')
-        plt.savefig(str(i) + "loss.png")
+        # plt.savefig(str(i) + "loss.png")
         plt.clf()
