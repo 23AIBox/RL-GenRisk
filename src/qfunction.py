@@ -57,12 +57,7 @@ class Q_Fun(nn.Module):
             nodes_vec = self.lin2(torch.cat([x_1,x_2,x_3], dim=-1))
         else:
             nodes_vec=mu
-
-
         num_nodes = self.n_actions
-
-
-
         if not batch_flag:
             graph_pool2 = scatter_add(nodes_vec, action_sel, dim=-2)[0]
             number = len(action_sel) - torch.sum(action_sel)
