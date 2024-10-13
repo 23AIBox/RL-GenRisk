@@ -3,10 +3,6 @@ import torch
 import gc
 from torch_geometric.data import Data, Batch
 
-"""
-Store trajectories using Data class
-mini-Batch using Batch
-"""
 class ReplayBuffer:
     def __init__(self, max_size,n_actions):
         self.mem_size = max_size
@@ -40,9 +36,6 @@ class ReplayBuffer:
         self.mem_cntr += 1
 
     def sample_buffer(self, batch_size):
-
-
-
         if self.mem_cntr > self.mem_size:
             selete = [x for x in range(self.mem_size)]
             sample_index = np.random.choice(selete, size=batch_size)
@@ -54,12 +47,6 @@ class ReplayBuffer:
         batch_r = self.memory_r[sample_index, :]
         batch_ai = self.memory_ai[sample_index, :]
         batch_sa=self.memory_sa[sample_index,:]
-        # max_mem = min(self.mem_cntr, self.mem_size)
-        # batch = np.random.choice(max_mem, batch_size, replace=False)
-        # graph_list = [self.graph_memory[b] for b in batch]
-        # keys = graph_list[0].keys
-        
-        # return Batch.from_data_list(graph_list)
         return batch_s,batch_a,batch_r,batch_ai,batch_sa
     def clear(self):
 
@@ -68,8 +55,7 @@ class ReplayBuffer:
         self.memory_a = 0
         self.memory_r = 0
         self.memory_ai = 0
-        # del self.memory_mu,self.memory_ei,self.memory_s,self.memory_a,self.memory_r,self.memory_s_,self.memory_d,self.memory_ai
-        # gc.collect()
+
     def __len__(self):
         return min(self.mem_cntr, self.mem_size)
 
