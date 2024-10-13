@@ -12,7 +12,6 @@ import torch
 torch.set_num_threads(4)
 gene_sta = []
 
-# gene_sta_test = []
 def seed_torch(seed=42):
     seed = int(seed)
     random.seed(seed)
@@ -34,13 +33,10 @@ with open('Census_allSun Feb 28 12_12_09 2021.csv', 'r') as f:
         gene_sta.append(i[0])
 test_sta_total = []
 
-
 test_sta_number=len(test_sta_total)
 test_sta=[]
 test_sta2=[]
 sample_index=random.sample(range(0, test_sta_number), int(test_sta_number*0.7))
-
-
 
 def Normalized(feature):
     X_scaler = preprocessing.StandardScaler()
@@ -91,7 +87,7 @@ def laplacian(net):
 
 def evaluate(gene2):
     gene_sta = []
-    with open('Census_allSun Feb 28 12_12_09 2021.csv', 'r') as f:
+    with open('data.csv', 'r') as f:
         reader = csv.reader(f)
         for i in reader:
             gene_sta.append(i[0])
@@ -145,7 +141,6 @@ def run(gene_final,score_alpha):
         patient.extend(gene_final[gene])
     pat_num = len(set(patient))
     RL.pat_num = pat_num
-    print(pat_num)
 
     state_steps=[]
     reward_steps=[]
@@ -178,8 +173,6 @@ if __name__ == "__main__":
     weightnumber = 50
     seed_torch(seed)
     f = open("test_" + cancer + ".txt", "w")
-
-
     for i in range(test_sta_number):
         if i in sample_index:
             test_sta.append(test_sta_total[i])
