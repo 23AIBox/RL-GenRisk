@@ -152,7 +152,7 @@ def run(gene_final,score_alpha):
     sel_index = np.zeros(RL.n_actions)
 
     action_index= RL.choose_action(feature,action_sel,RL.actions_index)
-    f = open("Qvalue_"+cancer+".txt", "w")
+    f = open("Ranking_List.txt", "w")
     result=[]
     for i in range(len(action_index)):
         result.append([gene_name[i],action_index[i]])
@@ -208,11 +208,7 @@ if __name__ == "__main__":
                       # output_graph=True
                       )
     gene_sort = run(gene_final,score_alpha)
-    f = open("outtest_"+cancer+".txt", "w")
-    for gene in list(gene_sort.keys()):
-        print(gene," ",gene_sort[gene], file = f)
-    f.close()
-    RL.plot_cost_finnal(0)
+    
 
 
 
