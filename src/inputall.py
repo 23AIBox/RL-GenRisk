@@ -27,13 +27,10 @@ def getInput(cancer):
         else:
             patient = patients_name[i]
             test_data[patient] = patients[patient]
-    print('Total number of patients: ', len(patients.keys()))
-    print('Total number of patients for train: ', len(train_data.keys()))
-    print('Total number of patients for test: ', len(test_data.keys()))
     return patients, test_data,patients
 
 def getWeight(gene_name):
-    filename = 'nCOP-master/Inputs/weights.txt'
+    filename = 'Inputs/weights.txt'
     weights = {}
     with open(filename, 'r') as file_to_read:
         for line in file_to_read.readlines():
@@ -83,7 +80,7 @@ def getNetwork(gene):
     set1 = []
     net = {}
     gene_new = {}
-    filename = 'nCOP-master/Inputs/HPRD.txt'
+    filename = 'Inputs/HPRD.txt'
     with open(filename, 'r') as file_to_read:
         for line in file_to_read.readlines():
             gene_temp = line.split()
