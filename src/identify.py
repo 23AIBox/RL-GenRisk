@@ -25,7 +25,7 @@ def seed_torch(seed=42):
     torch.backends.cudnn.enabled = False
 
 
-with open('Census_allSun Feb 28 12_12_09 2021.csv', 'r') as f:
+with open('GeneID.csv', 'r') as f:
     reader = csv.reader(f)
     for i in reader:
         if i[0] == 'Gene Symbol':
