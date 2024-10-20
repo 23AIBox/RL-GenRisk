@@ -28,14 +28,36 @@ RL-GenRisk has the following dependencies:
 * numpy
 
 
+## Running RL-GenRisk
+To clone this repository, users can use:
+```
+git clone https://github.com/23AIBox/RL-GenRisk.git
+```
+
 Setup the required environment using `requirements.txt` with python. While in the project directory run:
 ```
 pip install -r requirements.txt
 ```
 
-## Running RL-GenRisk
 We upload a trained model for clear cell renal cell carcinoma risk gene identification. To run this model you can use command line instructions:
 ```
 python identify.py
 ```
 After the running is completed, the file `Ranking_List.txt` is output in the corresponding directory, which contains the identified gene risk ranking list.
+
+## Additional datasets
+
+We used datasets of known ccRCC risk genes from multiple sources. Links to the databases and publications can be found below. 
+
+
+#### IntOGen version 2023.05.31
+https://www.intogen.org/download
+
+#### Network of Cancer Genes (NCG) version 7.1
+http://network-cancer-genes.org/download.php
+
+#### The Cancer Gene Census (CGC) v100
+https://cancer.sanger.ac.uk/census
+
+#### Bailey et al.
+Table S1 from https://www.cell.com/cms/10.1016/j.cell.2018.02.060/attachment/cf6b14b1-6af1-46c3-a2c2-91008c78e87f/mmc1.xlsx
