@@ -98,7 +98,7 @@ def draw_2_box(lst_1, lst_2, name, top_n, save_path, save_check):
 draw_2_box(lst_top20_STPL_gold, lst_all_STPL_gold,'STPL', 'top K', 'STPL.pdf', False)
 
 
-
+## embedding compare
 embedding = np.load('Embedding.npy')
 df_gene_idx = pd.read_csv('Embedding_Gene_idx.txt', sep='\t', header=None)
 dict_embedding = {}
