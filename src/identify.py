@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 import numpy as np
+import networx as nx
 import random
 from sklearn import preprocessing
 os.environ['CUDA_VISIBLE_DEVICES'] = '4,5'
@@ -106,22 +107,85 @@ def evaluate(gene2):
             num2 = num2 + 1
 
     return num,num1,num2
+def get_data_output():
+    df_HPRD = pd.read_csv('nCOP-master/Inputs/HPRD.txt', sep=' ',header=None)
+    edge_list = np.array(df_HPRD)
+    G_hprd = nx.Graph()
+    G_hprd.add_edges_from(edge_list)
+    nodelist = list(G_hprd.nodes())
+    df_gold = pd.read_csv('sta_ccRCC_Merged.txt',header=None)
+    lst_gold = df_gold[0].tolist()
+    lst_gold = np.intersect1d(nodelist, lst_gold)
+    embedding = np.load('Embedding.npy')
+    df_gene_idx = pd.read_csv('Embedding_Gene_idx.txt', sep='\t', header=None)
+    emb_gene_idx = df_gene_idx[0].tolist()
+    dict_embedding = {}
+    for i in range(len(emb_gene_idx)):
+        dict_embedding[emb_gene_idx[i]] = embedding[i]
+    return G_hprd, lst_gold, dict_embedding
 
+def one_side_ttest(value, lst_data):
+    from scipy import stats
+    data = lst_data  
+    t_stat, p_value = stats.ttest_1samp(data, value)
+    p_value_lesser = p_value / 2 if t_stat > 0 else 1 - p_value / 2 
+    p_value_greater= p_value / 2 if t_stat < 0 else 1 - p_value / 2
+    return p_value_greater, p_value_lesser
+
+def get_average_STPL(gene_ranking, G_hprd, lst_gold):
+    dict_average_STPL = {}
+    dict_average_STPL_p = {}
+    for x in gene_ranking:
+        dict_average_STPL[x] = 0
+        dict_average_STPL_p[x] = 0
+    lst_data = []
+    for x in gene_ranking:
+        lst_lengths = []
+        for y in lst_gold:
+            if x == y:
+                continue
+            if nx.has_path(G_hprd, x, y):
+                length = nx.shortest_path_length(G_hprd, y, x)
+                lst_lengths.append(length)
+            else:
+                lst_lengths.append(15) # use 15 as max value
+        dict_average_STPL[x] = np.nanmean(lst_lengths)
+        lst_data.append(np.nanmean(lst_lengths))
+    for x in gene_ranking:
+        p_greater, p_lesser = one_side_ttest(dict_average_STPL[x], lst_data)
+        dict_average_STPL_p[x] = p_lesser
+    return dict_average_STPL, dict_average_STPL_p
+        
+def get_average_CS(gene_ranking, lst_gold, dict_embedding):
+    from sklearn.metrics.pairwise import cosine_similarity
+    dict_average_CS = {}
+    dict_average_CS_p = {}
+    for x in gene_ranking:
+        dict_average_CS[x] = 0
+        dict_average_CS_p[x] = 0
+    lst_data = []
+    for x in gene_ranking:
+        lst_lengths = []
+        tmp_emb = dict_embedding[x].reshape(1, -1)
+        for y in lst_gold:
+            if x == y:
+                continue    
+        tgt_emb = dict_embedding[y].reshape(1, -1)
+        sim = cosine_similarity(tmp_emb, tgt_emb)[0][0]
+
+        dict_average_CS[x] = np.nanmean(sim)
+        lst_data.append(np.nanmean(sim))
+
+    for x in gene_ranking:
+        p_greater, p_lesser = one_side_ttest(dict_average_CS[x], lst_data)
+        dict_average_CS_p[x] = p_greater
+    return dict_average_CS, dict_average_CS_p
+        
 
 def run(gene_final,score_alpha):
 
-    step = 0
     i = 0
-    train_num = 0
-    episode_num = 1
     gene_sort = {}
-    score_PBRM1 = []
-    score_MUC4 = []
-    score_VHL = []
-    n_step=1
-    train_flag=True
-    best_num1 = 0
-    best_num2 = 0
     log_path="log"
     os.makedirs(log_path, exist_ok=True)
     f2 = open(log_path+"/log_"+cancer+".txt", "w")
@@ -129,12 +193,9 @@ def run(gene_final,score_alpha):
 
     RL.load(save_path)
 
-    train_flag = False
     RL.clear_mem()
     RL.epsilon = 1
-    step=0
     feature = get_feature(network,weights,gene_name,gene_final)
-
 
     patient = []
     for gene in list(gene_final.keys()):
@@ -142,23 +203,23 @@ def run(gene_final,score_alpha):
     pat_num = len(set(patient))
     RL.pat_num = pat_num
 
-    state_steps=[]
-    reward_steps=[]
-    action_steps=[]
-    sel_action_steps=[]
-    action_index_steps=[]
-    steps_cntr =0
     action_sel=[i for i in range(RL.n_actions)]
-    sel_index = np.zeros(RL.n_actions)
-
     action_index= RL.choose_action(feature,action_sel,RL.actions_index)
     f = open("Ranking_List.txt", "w")
     result=[]
     for i in range(len(action_index)):
         result.append([gene_name[i],action_index[i]])
     result.sort(key=lambda x: x[1],reverse=True)
+    gene_ranking = []
     for i in range(len(action_index)):
-        print(result[i][0]+"\t"+str(result[i][1]), file = f)
+        gene_ranking.append(result[i][0])
+    G_hprd, lst_gold, dict_embedding = get_data_output()
+    dict_average_STPL, dict_average_STPL_p  = get_average_STPL(gene_ranking, G_hprd, lst_gold)
+    dict_average_CS, dict_average_CS_p = get_average_CS(gene_ranking, lst_gold, dict_embedding)
+
+    for i in range(len(action_index)):
+        x = result[i][0]
+        print(result[i][0]+"\t"+str(dict_average_STPL[x])+"\t"+str(dict_average_STPL_p[x])+"\t"+str(dict_average_CS[x]) + "\t"+str(dict_average_CS_p[x]) , file = f)
     print(action_index,action_index.shape)
     f.close()
     exit()
@@ -209,18 +270,5 @@ if __name__ == "__main__":
                       )
     gene_sort = run(gene_final,score_alpha)
     
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
