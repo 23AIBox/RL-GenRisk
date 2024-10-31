@@ -216,7 +216,7 @@ def run(gene_final,score_alpha):
     G_hprd, lst_gold, dict_embedding = get_data_output()
     dict_average_STPL, dict_average_STPL_p  = get_average_STPL(gene_ranking, G_hprd, lst_gold)
     dict_average_CS, dict_average_CS_p = get_average_CS(gene_ranking, lst_gold, dict_embedding)
-
+    print('Gene' + "\t" + "Average shortest path length to known risk genes" +"\t" +"p-value (Average shortest path length)" + "\t" +"Average cosine similarity with known risk genes" +"\t" + "p-value (Average cosine similarity)" + "\n")
     for i in range(len(action_index)):
         x = result[i][0]
         print(result[i][0]+"\t"+str(dict_average_STPL[x])+"\t"+str(dict_average_STPL_p[x])+"\t"+str(dict_average_CS[x]) + "\t"+str(dict_average_CS_p[x]) , file = f)
