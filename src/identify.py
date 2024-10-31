@@ -153,6 +153,8 @@ def get_average_STPL(gene_ranking, G_hprd, lst_gold):
         lst_data.append(np.nanmean(lst_lengths))
     for x in gene_ranking:
         p_greater, p_lesser = one_side_ttest(dict_average_STPL[x], lst_data)
+        if p_lesser < 1e-160:
+            p_lesser = "< 1e-160"
         dict_average_STPL_p[x] = p_lesser
     return dict_average_STPL, dict_average_STPL_p
         
@@ -178,6 +180,8 @@ def get_average_CS(gene_ranking, lst_gold, dict_embedding):
 
     for x in gene_ranking:
         p_greater, p_lesser = one_side_ttest(dict_average_CS[x], lst_data)
+        if p_greater < 1e-160:
+            p_greater = "< 1e-160"
         dict_average_CS_p[x] = p_greater
     return dict_average_CS, dict_average_CS_p
         
