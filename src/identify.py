@@ -108,7 +108,7 @@ def evaluate(gene2):
 
     return num,num1,num2
 def get_data_output():
-    df_HPRD = pd.read_csv('nCOP-master/Inputs/HPRD.txt', sep=' ',header=None)
+    df_HPRD = pd.read_csv('../data/HPRD.txt', sep=' ',header=None)
     edge_list = np.array(df_HPRD)
     G_hprd = nx.Graph()
     G_hprd.add_edges_from(edge_list)
@@ -116,8 +116,8 @@ def get_data_output():
     df_gold = pd.read_csv('sta_ccRCC_Merged.txt',header=None)
     lst_gold = df_gold[0].tolist()
     lst_gold = np.intersect1d(nodelist, lst_gold)
-    embedding = np.load('Embedding.npy')
-    df_gene_idx = pd.read_csv('Embedding_Gene_idx.txt', sep='\t', header=None)
+    embedding = np.load('../data/Embedding.npy')
+    df_gene_idx = pd.read_csv('../data/Embedding_Gene_idx.txt', sep='\t', header=None)
     emb_gene_idx = df_gene_idx[0].tolist()
     dict_embedding = {}
     for i in range(len(emb_gene_idx)):
@@ -245,7 +245,7 @@ if __name__ == "__main__":
             test_sta2.append(test_sta_total[i])
             print(test_sta_total[i], file=f)
     f.close()
-    with open("sta_" + cancer + ".txt", 'r') as file_to_read:
+    with open("../data/sta_ccRCC_Merged.txt", 'r') as file_to_read:
         for line in file_to_read.readlines():
             gene_temp = line.split()
             test_sta_total.append(gene_temp[0])
