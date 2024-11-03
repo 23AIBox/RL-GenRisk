@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 import numpy as np
-import networx as nx
+import networkx as nx
 import random
 from sklearn import preprocessing
 os.environ['CUDA_VISIBLE_DEVICES'] = '4,5'
