@@ -30,7 +30,7 @@ def getInput(cancer):
     return patients, test_data,patients
 
 def getWeight(gene_name):
-    filename = 'Inputs/weights.txt'
+    filename = '../data/weights.txt'
     weights = {}
     with open(filename, 'r') as file_to_read:
         for line in file_to_read.readlines():
