@@ -3,7 +3,7 @@ import numpy as np
 import random
 
 def getInput(cancer):
-    filename = "Inputs/"+cancer+".txt"
+    filename = "../data/KIRC.txt"
     patients = {}
     with open(filename, 'r') as file_to_read:
         for line in file_to_read.readlines():
@@ -80,7 +80,7 @@ def getNetwork(gene):
     set1 = []
     net = {}
     gene_new = {}
-    filename = 'Inputs/HPRD.txt'
+    filename = '../data/HPRD.txt'
     with open(filename, 'r') as file_to_read:
         for line in file_to_read.readlines():
             gene_temp = line.split()
