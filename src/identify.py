@@ -193,7 +193,7 @@ def run(gene_final,score_alpha):
     log_path="log"
     os.makedirs(log_path, exist_ok=True)
     f2 = open(log_path+"/log_"+cancer+".txt", "w")
-    save_path = "agent_ccRCC.th"
+    save_path = "../data/agent_ccRCC.th"
 
     RL.load(save_path)
 
