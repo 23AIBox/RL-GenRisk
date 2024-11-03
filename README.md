@@ -8,7 +8,7 @@ RL-GenRisk is a deep reinforcement learning-based method for clear cell renal ce
 
 
 ## Installation & Dependencies
-The code is written in Python 3 and was mainly tested on Python 3.6 and a Linux OS but should run on any OS that supports python and pip. Training is faster on a GPU but works also on a standard computer. The package development version is tested on Linux and Windows 10 operating systems. The developmental version of the package has been tested on the following systems:
+The code is written in Python 3 and was mainly tested on Python 3.9 and a Linux OS but should run on any OS that supports python and pip. Training is faster on a GPU but works also on a standard computer. The package development version is tested on Linux and Windows 10 operating systems. The developmental version of the package has been tested on the following systems:
 
 * Linux: Ubuntu 22.04.3 LTS
 * Windows: 10
