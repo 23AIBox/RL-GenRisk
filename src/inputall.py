@@ -115,3 +115,43 @@ def getNetwork(gene):
             network[gene2][gene1] = 1
 
     return np.array(network), gene_new, set1
+
+def getNetworkall(gene):
+    set1 = []
+    net = {}
+    gene_new = {}
+    filename = '../data/HPRD.txt'
+    with open(filename, 'r') as file_to_read:
+        for line in file_to_read.readlines():
+            gene_temp = line.split()
+            gene1 = gene_temp[0]
+            gene2 = gene_temp[1]
+            if gene1 in list(net.keys()):
+                net[gene1].append(gene2)
+            else:
+                net[gene1] = [gene2]
+            if gene1 not in list(gene_new.keys()) :
+                if gene1 in list(gene.keys()):
+                    gene_new[gene1] = gene[gene1]
+                else:
+                    gene_new[gene1] = []
+            if gene2 not in list(gene_new.keys()):
+                if gene2 in list(gene.keys()):
+                    gene_new[gene2] = gene[gene2]
+                else:
+                    gene_new[gene2] = []
+            if gene1 not in set1:
+                set1.append(gene1)
+            if gene2 not in set1:
+                set1.append(gene2)
+
+    gen_len = len(set1)
+    print(len(set1))
+    print(len(gene_new))
+    network = pd.DataFrame(np.zeros((gen_len, gen_len)), index=list(set1), columns=list(set1))
+    for gene1 in list(net.keys()):
+        for gene2 in net[gene1]:
+            network[gene1][gene2] = 1
+            network[gene2][gene1] = 1
+
+    return np.array(network), gene_new, set1
