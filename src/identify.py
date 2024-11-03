@@ -26,7 +26,7 @@ def seed_torch(seed=42):
     torch.backends.cudnn.enabled = False
 
 
-with open('GeneID.csv', 'r') as f:
+with open('../data/GeneID.csv', 'r') as f:
     reader = csv.reader(f)
     for i in reader:
         if i[0] == 'Gene Symbol':
@@ -88,7 +88,7 @@ def laplacian(net):
 
 def evaluate(gene2):
     gene_sta = []
-    with open('data.csv', 'r') as f:
+    with open('../data/GeneID.csv', 'r') as f:
         reader = csv.reader(f)
         for i in reader:
             gene_sta.append(i[0])
@@ -113,7 +113,7 @@ def get_data_output():
     G_hprd = nx.Graph()
     G_hprd.add_edges_from(edge_list)
     nodelist = list(G_hprd.nodes())
-    df_gold = pd.read_csv('sta_ccRCC_Merged.txt',header=None)
+    df_gold = pd.read_csv('../data/sta_ccRCC_Merged.txt',header=None)
     lst_gold = df_gold[0].tolist()
     lst_gold = np.intersect1d(nodelist, lst_gold)
     embedding = np.load('../data/Embedding.npy')
