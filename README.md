@@ -38,7 +38,10 @@ Setup the required environment using `requirements.txt` with python. While in th
 ```
 pip install -r requirements.txt
 ```
-
+We also provided a conda environment file, users can build the environment by running:
+```
+conda env create -f environment.yaml
+```
 We upload a trained model for clear cell renal cell carcinoma risk gene identification. To run this model you can use command line instructions:
 ```
 python identify.py
