@@ -48,6 +48,17 @@ python identify.py
 ```
 After the running is completed, the file `Ranking_List.txt` is output in the corresponding directory, which contains the identified gene risk ranking list.
 
+## The output of RL-GenRisk
+`Ranking_List.txt` contains the ranking, the average shortest path length to all known risk genes, the cosine similarity of the feature representations with known risk genes, and the corresponding significance p-value (one-sided t-test) for each gene. 
+
+Moreover, RL-GenRisk can output the comparison of the top K genes with K randomly selected genes (randomly sampled 100 times) in terms of their average shortest path lengths to known risk genes in the PPI network, as well as their average cosine similarities of feature embeddings with known risk genes. Users can evaluate the reasonableness of the top K predicted genes. Additionally, to assist users in determining the optimal K value of the threshold, RL-GenRisk provided the code for analyzing the proportion of known risk genes within the top K genes. Users can use the following commands to get these results:
+```
+python utils_draw.py 
+```
+
+
+
+
 ## Additional datasets
 
 We used datasets of known ccRCC risk genes from multiple sources. Links to the databases and publications can be found below. 
