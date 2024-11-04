@@ -87,7 +87,7 @@ def main():
     
     
     
-    def draw_top_k_proportion(gene_ranking, num):
+    def draw_top_k_proportion(gene_ranking, num1 ,num2):
         filename_1_intogen = '../data/sta_ccRCC_IntOGen.txt'
         filename_1_ngc = '../data/sta_ccRCC_NCG.txt'
         filename_1_all = '../data/sta_ccRCC_Merged.txt'
@@ -107,10 +107,10 @@ def main():
             'Merged': lst_gold_genes_all
         }
     
-        topK_genes = gene_ranking[:num]
+        topK_genes = gene_ranking[:num2]
         overlap_matrix = []
         k_lst = []
-        for kk in range(20, num+1 ,10):
+        for kk in range(num1, num2+1 ,10):
             k_lst.append(kk)
         
         dict_topk_acc = {}
@@ -163,7 +163,7 @@ def main():
         plt.savefig("TopK_known_Proportion.pdf", bbox_inches='tight')
         plt.show()
     gene_ranking = df_ranking['Gene'].tolist()
-    draw_top_k_proportion(gene_ranking, int(sys.argv[2]))
+    draw_top_k_proportion(gene_ranking, int(sys.argv[2]), int(sys.argv[3]))
 
 
  
