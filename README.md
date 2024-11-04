@@ -53,8 +53,11 @@ After the running is completed, the file `Ranking_List.txt` is output in the cor
 
 Moreover, RL-GenRisk can output the comparison of the top K genes with K randomly selected genes (randomly sampled 100 times) in terms of their average shortest path lengths to known risk genes in the PPI network, as well as their average cosine similarities of feature embeddings with known risk genes. Users can evaluate the reasonableness of the top K predicted genes. Additionally, to assist users in determining the optimal K value of the threshold, RL-GenRisk provided the code for analyzing the proportion of known risk genes within the top K genes. Users can use the following commands to get these results:
 ```
-python utils_draw.py 
+python utils_draw.py param1 param2 param3
+# for example:
+python utils_draw.py 20 20 100
 ```
+Using this command, users can generate 1) the results that show the top 20 (param1) genes with 20 (param1) randomly selected genes (randomly sampled 100 times) in terms of their average shortest path lengths to known risk genes in the PPI network, as well as their average cosine similarities of feature embeddings with known risk genes; 2) the results of analyzing the proportion of known risk genes within the top K genes (K from 20 (param2) to 100 (param3) in increments of 10).
 
 
 
