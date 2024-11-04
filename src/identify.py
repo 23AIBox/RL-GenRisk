@@ -223,7 +223,10 @@ def run(gene_final,score_alpha):
     print('Gene' + "\t" + "Average shortest path length to known risk genes" +"\t" +"p-value (Average shortest path length)" + "\t" +"Average cosine similarity with known risk genes" +"\t" + "p-value (Average cosine similarity)", file = f)
     for i in range(len(action_index)):
         x = result[i][0]
-        print(result[i][0]+"\t"+str(dict_average_STPL[x])+"\t"+str(dict_average_STPL_p[x])+"\t"+str(dict_average_CS[x]) + "\t"+str(dict_average_CS_p[x]) , file = f)
+        out = result[i][0]
+        if x == "MLL2":
+            out = "KMT2D"
+        print(out+"\t"+str(dict_average_STPL[x])+"\t"+str(dict_average_STPL_p[x])+"\t"+str(dict_average_CS[x]) + "\t"+str(dict_average_CS_p[x]) , file = f)
     print(action_index,action_index.shape)
     f.close()
     exit()
