@@ -42,11 +42,12 @@ We also provided a conda environment file, users can build the environment by ru
 ```
 conda env create -f environment.yaml
 ```
+
 We upload a trained model for clear cell renal cell carcinoma risk gene identification. To run this model you can use command line instructions:
 ```
 python identify.py
 ```
-After the running is completed, the file `Ranking_List.txt` is output in the corresponding directory, which contains the identified gene risk ranking list.
+This process will take about 1-2 minutes. After the running is completed, the file `Ranking_List.txt` is output in the corresponding directory, which contains the identified gene risk ranking list.
 
 ## The output of RL-GenRisk
 `Ranking_List.txt` contains the ranking, the average shortest path length to all known risk genes, the cosine similarity of the feature representations with known risk genes, and the corresponding significance p-value (one-sided t-test) for each gene. 
