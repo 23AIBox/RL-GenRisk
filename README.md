@@ -38,6 +38,7 @@ Setup the required environment using `requirements.txt` with python. While in th
 ```
 pip install -r requirements.txt
 ```
+It takes about 25 minutes to set up the environment. 
 We also provided a conda environment file, users can build the environment by running:
 ```
 conda env create -f environment.yaml
