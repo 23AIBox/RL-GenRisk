@@ -50,6 +50,7 @@ openpyxl==3.1.5
 packaging==24.1
 pandas==2.2.3
 parso==0.8.4
+patsy-1.0.1
 pexpect==4.9.0
 pillow==10.4.0
 platformdirs==4.3.6
@@ -73,6 +74,7 @@ six==1.16.0
 slicer==0.0.8
 stack-data==0.6.3
 stats==0.1.2a0
+statsmodels-0.14.4
 sympy==1.12
 threadpoolctl==3.5.0
 torch==2.1.0+cu121
@@ -94,3 +96,5 @@ wcwidth==0.2.13
 Werkzeug==3.0.4
 yarl==1.13.1
 zipp==3.20.2
+
+ 
