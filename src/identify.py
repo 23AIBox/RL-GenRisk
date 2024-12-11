@@ -7,6 +7,8 @@ import numpy as np
 import networkx as nx
 import random
 from sklearn import preprocessing
+from statsmodels.stats.multitest import multipletests
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '4,5'
 
 import torch
@@ -132,7 +134,8 @@ def one_side_ttest(value, lst_data):
     p_value_greater= p_value / 2 if t_stat < 0 else 1 - p_value / 2
     return p_value_greater, p_value_lesser
 
-def get_average_STPL(gene_ranking, G_hprd, lst_gold):
+
+def get_average_STPL(gene_ranking, G_hprd, lst_gold, random_samples):
     dict_average_STPL = {}
     dict_average_STPL_p = {}
     for x in gene_ranking:
@@ -148,17 +151,21 @@ def get_average_STPL(gene_ranking, G_hprd, lst_gold):
                 length = nx.shortest_path_length(G_hprd, y, x)
                 lst_lengths.append(length)
             else:
-                lst_lengths.append(15) # use 15 as max value
+                lst_lengths.append(15) # use 11 as max value
         dict_average_STPL[x] = np.nanmean(lst_lengths)
         lst_data.append(np.nanmean(lst_lengths))
+
+    lst_random_value = []
+    for x in random_samples:
+        lst_random_value.append(dict_average_STPL[x])
     for x in gene_ranking:
-        p_greater, p_lesser = one_side_ttest(dict_average_STPL[x], lst_data)
-        if p_lesser < 1e-160:
-            p_lesser = "< 1e-160"
+        p_greater, p_lesser = one_side_ttest(dict_average_STPL[x], lst_random_value)
+        # if p_lesser < 1e-160:
+            # p_lesser = "< 1e-160"
         dict_average_STPL_p[x] = p_lesser
     return dict_average_STPL, dict_average_STPL_p
         
-def get_average_CS(gene_ranking, lst_gold, dict_embedding):
+def get_average_CS(gene_ranking, lst_gold, dict_embedding, random_samples):
     from sklearn.metrics.pairwise import cosine_similarity
     dict_average_CS = {}
     dict_average_CS_p = {}
@@ -169,22 +176,57 @@ def get_average_CS(gene_ranking, lst_gold, dict_embedding):
     for x in gene_ranking:
         lst_lengths = []
         tmp_emb = dict_embedding[x].reshape(1, -1)
+        sim_lst = []
         for y in lst_gold:
             if x == y:
                 continue    
-        tgt_emb = dict_embedding[y].reshape(1, -1)
-        sim = cosine_similarity(tmp_emb, tgt_emb)[0][0]
-
-        dict_average_CS[x] = np.nanmean(sim)
-        lst_data.append(np.nanmean(sim))
-
+            tgt_emb = dict_embedding[y].reshape(1, -1)
+            sim = cosine_similarity(tmp_emb, tgt_emb)[0][0]
+            sim_lst.append(sim)
+        dict_average_CS[x] = np.nanmean(sim_lst)
+        lst_data.append(np.nanmean(sim_lst))
+    lst_random_value = []
+    for x in random_samples:
+        lst_random_value.append(dict_average_CS[x])
     for x in gene_ranking:
-        p_greater, p_lesser = one_side_ttest(dict_average_CS[x], lst_data)
-        if p_greater < 1e-160:
-            p_greater = "< 1e-160"
+        p_greater, p_lesser = one_side_ttest(dict_average_CS[x], lst_random_value)
+        # if p_greater < 1e-160:
+            # p_greater = "< 1e-160"
         dict_average_CS_p[x] = p_greater
     return dict_average_CS, dict_average_CS_p
+
+def FDR_adj_P(dict_average_STPL_p, dict_average_CS_p, gene_ranking):
+    dict_average_STPL_FDR_p = {}
+    dict_average_CS_FDR_p = {}
+    p_value_lst_STPL = []
+    p_value_lst_CS = []
+    for x in gene_ranking:
+        p_value_lst_STPL.append(dict_average_STPL_p[x])
+        p_value_lst_CS.append(dict_average_CS_p[x])
+    
+    rejected, pvals_corrected_STPL, _, _ = multipletests(p_value_lst_STPL, method='fdr_bh')
+    rejected, pvals_corrected_CS, _, _ = multipletests(p_value_lst_CS, method='fdr_bh')
+    base = 9039
+    for i in range(len(gene_ranking)):
+        tmp_gene = gene_ranking[i]
+        tmp_FDR_p_STPL = pvals_corrected_STPL[i]
+        tmp_FDR_p_CS = pvals_corrected_CS[i]
+        tmp_BF_p_STPL = min(1.0, dict_average_STPL_p[x] * base)
+        tmp_BF_p_CS = min(1.0, dict_average_CS_p[x] * base)
+        # tmp_BF_p_STPL = dict_average_STPL_p[x]
+        # tmp_BF_p_CS = dict_average_CS_p[x]
+
         
+        # if tmp_FDR_p_STPL < 1e-160:
+        #     tmp_FDR_p_STPL = "< 1e-160"
+        # if tmp_FDR_p_CS < 1e-160:
+        #     tmp_FDR_p_CS = "< 1e-160"
+        
+        
+        dict_average_STPL_FDR_p[tmp_gene] = tmp_FDR_p_STPL
+        dict_average_CS_FDR_p[tmp_gene] = tmp_FDR_p_CS
+        
+    return dict_average_STPL_FDR_p, dict_average_CS_FDR_p
 
 def run(gene_final,score_alpha):
 
@@ -217,16 +259,31 @@ def run(gene_final,score_alpha):
     gene_ranking = []
     for i in range(len(action_index)):
         gene_ranking.append(result[i][0])
+        
     G_hprd, lst_gold, dict_embedding = get_data_output()
-    dict_average_STPL, dict_average_STPL_p  = get_average_STPL(gene_ranking, G_hprd, lst_gold)
-    dict_average_CS, dict_average_CS_p = get_average_CS(gene_ranking, lst_gold, dict_embedding)
-    print('Gene' + "\t" + "Average shortest path length to known risk genes" +"\t" +"p-value (Average shortest path length)" + "\t" +"Average cosine similarity with known risk genes" +"\t" + "p-value (Average cosine similarity)", file = f)
+    
+    random_lst = [i for i in range(len(gene_ranking))]
+    import random
+    random_sample_idx = random.sample(random_lst, 2000)
+    random_samples = []
+    for x in random_sample_idx:
+        random_samples.append(gene_ranking[x])
+    
+    
+    dict_average_STPL, dict_average_STPL_p  = get_average_STPL(gene_ranking, G_hprd, lst_gold, random_samples)
+    dict_average_CS, dict_average_CS_p = get_average_CS(gene_ranking, lst_gold, dict_embedding, random_samples)
+
+    dict_average_STPL_FDR_p, dict_average_CS_FDR_p = FDR_adj_P(dict_average_STPL_p, dict_average_CS_p, gene_ranking)
+    
+    print('Gene' + "\t" + "Average shortest path length to known risk genes" +"\t" +"FDR p-value (Average shortest path length)" + "\t" +"Average cosine similarity with known risk genes" +"\t" + "FDR p-value (Average cosine similarity)", file = f)
+    
+    # print('Gene' + "\t" + "Average shortest path length to known risk genes" +"\t" +"p-value (Average shortest path length)" + "\t" +"Average cosine similarity with known risk genes" +"\t" + "p-value (Average cosine similarity)", file = f)
     for i in range(len(action_index)):
         x = result[i][0]
         out = result[i][0]
         if x == "MLL2":
             out = "KMT2D"
-        print(out+"\t"+str(dict_average_STPL[x])+"\t"+str(dict_average_STPL_p[x])+"\t"+str(dict_average_CS[x]) + "\t"+str(dict_average_CS_p[x]) , file = f)
+        print(out+"\t"+str(dict_average_STPL[x])+"\t"+str(dict_average_STPL_FDR_p[x])+"\t"+str(dict_average_CS[x]) + "\t"+str(dict_average_CS_FDR_p[x]) , file = f)
     print(action_index,action_index.shape)
     f.close()
     exit()
@@ -276,6 +333,13 @@ if __name__ == "__main__":
                       # output_graph=True
                       )
     gene_sort = run(gene_final,score_alpha)
-    
+
+
+
+
+
+
+
+
 
 
