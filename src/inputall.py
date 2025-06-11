@@ -27,7 +27,7 @@ def getInput(cancer):
         else:
             patient = patients_name[i]
             test_data[patient] = patients[patient]
-    return patients, test_data,patients
+    return train_data, test_data, patients
 
 def getWeight(gene_name):
     filename = '../data/weights.txt'
